@@ -1,0 +1,15 @@
+@import '../node_modules/bulma/bulma.sass';
+
+.flex-row{
+    display: flex;
+}
+
+.article-list{
+    margin-top: 20px;
+
+    & .card{
+        &:nth-child(2n){
+            margin: 10px 0;
+        }
+    }
+}
