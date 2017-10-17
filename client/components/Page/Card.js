@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import CardButton from './CardButton';
 import IfComponent from './IfComponent';
 import CountDown from './CountDown';
-import { countDownArticle } from '../../actions';
+import { countDownArticle, stopCountDown } from '../../actions';
 
 const propTypes = {
     title: PropTypes.string,
@@ -20,6 +20,7 @@ const propTypes = {
     timerCompleted: PropTypes.func,
     body: PropTypes.string,
     readingTime: PropTypes.number,
+    showCountDown: PropTypes.bool,
 };
 const defaultProps = {
     title: '',
@@ -34,43 +35,23 @@ const defaultProps = {
     timerCompleted: () => {},
     body: '',
     readingTime: 0,
+    showCountDown: true,
 };
 
 class Card extends React.Component{
     constructor(props) {
         super(props);
-        
-        const { readingTime } = this.props;
-        this.setupState = this.setupState.bind(this);
-        this.stopCountingClicked = this.stopCountingClicked.bind(this);
-
-        this.setupState(readingTime);
-    }
-    componentWillReceiveProps(nextProps) {
-        const { readingTime } = nextProps;
-        this.setupState(readingTime);
-    }
-    setupState(readingTime) {
-        const enableCountDown = true;
-        this.state = {
-            enableCountDown,
-        };
-    }
-    stopCountingClicked() {
-        this.setState({
-            enableCountDown: false,
-        })
     }
     render() {
         const { title, author, published, body, isReading, section, removeClicked, readClicked,
-            readingTime, timerCompleted, onTicked, id }
+            readingTime, timerCompleted, onTicked, id, showCountDown, stopCountingClicked }
             = this.props;
-        const { countedReadingTime, enableCountDown } = this.state;
+
         return (
             <div className="card">
                 <div className="card-content">
                     <IfComponent
-                        condition={isReading && enableCountDown}
+                        condition={isReading && showCountDown}
                         whenTrue={(
                                 <span className="tag card-content__count-down is-warning">
                                 <CountDown
@@ -122,7 +103,7 @@ class Card extends React.Component{
                                         className="tag is-warning"
                                         onClick={(e) => {
                                             e.preventDefault();
-                                            this.stopCountingClicked();
+                                            stopCountingClicked(id);
                                         }}
                                     >Avsluta räkna</a>
                                 </div>
@@ -159,6 +140,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     onTicked: (id, readingTime) => {
         dispatch(countDownArticle(id, readingTime));
     },
+    stopCountingClicked: (id) => {
+       dispatch(stopCountDown(id));
+    }
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Card);

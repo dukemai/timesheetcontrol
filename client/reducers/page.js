@@ -1,4 +1,4 @@
-import { TOGGLE_SECTION, LOAD_ARTICLES, REMOVE_ARTICLE_FROM_READING, READ_ARTICLE, COUNT_DOWN_ARTICLE } from '../actions/ActionTypes';
+import { TOGGLE_SECTION, LOAD_ARTICLES, REMOVE_ARTICLE_FROM_READING, READ_ARTICLE, COUNT_DOWN_ARTICLE, STOP_COUNT_DOWN } from '../actions/ActionTypes';
 import _ from 'lodash';
 
 const INITIAL_STATE = {
@@ -45,6 +45,7 @@ const page = (state = INITIAL_STATE, action) => {
       const modified = _.find(readingArticles, article);
       modified.isReading = true;
       modified.readingTime = state.readingTime;
+      modified.showCountDown = true;
       return {
         ...state,
         readingArticles: [...readingArticles],
@@ -70,6 +71,18 @@ const page = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         basketList: [...basketList],
+        readingArticles: [...readingArticles],
+      };
+    }
+    case STOP_COUNT_DOWN: {
+      const { articleId } = action;
+      const { readingArticles } = state;
+      const modified = _.find(readingArticles, { id: articleId });
+      if (modified) {
+        modified.showCountDown = false;
+      }
+      return {
+        ...state,
         readingArticles: [...readingArticles],
       };
     }

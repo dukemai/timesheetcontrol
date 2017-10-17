@@ -33,6 +33,7 @@ const ArticlesList = ({ articles, removeCardClicked, readClicked, readingTime, o
                 body={article.body}
                 readingTime={article.readingTime}
                 id={article.id}
+                showCountDown={article.showCountDown}
             />
         ))}
     </div>    

@@ -41,6 +41,7 @@ class CountDown extends React.Component {
     }
     componentWillUnmount() {
         const { id } = this.props;
+        clearTimeout(this.timers[id]);
     }
     render() {
         const { time } = this.props;
