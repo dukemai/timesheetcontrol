@@ -8,25 +8,32 @@ import { toggleSection } from '../../actions';
 const propTypes = {
     sections: PropTypes.arrayOf(PropTypes.shape({})),
     onToggle: PropTypes.func,
+    totalReadingArticles: PropTypes.number,
 };
 const defaultProps = {
     sections: [],
     onToggle: () => {},
+    totalReadingArticles: 0,
 };
 
-const SectionOptions = ({ sections, onToggle }) => (
-    <ul className="sections is-clearfix">
-        {
-            sections.map((section) => (
-                 <SectionOption
-                    key={section.title}
-                    title={section.title}
-                    isEnabled={section.select}
-                    onToggle={() => onToggle(section)}
-                />
-            ))
-        }
-    </ul>
+const SectionOptions = ({ sections, onToggle, totalReadingArticles }) => (
+    <div className="sections-bar">
+        <ul className="sections is-clearfix">
+            {
+                sections.map((section) => (
+                    <SectionOption
+                        key={section.title}
+                        title={section.title}
+                        isEnabled={section.select}
+                        onToggle={() => onToggle(section)}
+                    />
+                ))
+            }  
+        </ul>
+        <span className="tag is-success total-articles">
+            {totalReadingArticles} i kö
+        </span>    
+    </div>
 );
 
 SectionOptions.propTypes = propTypes;
@@ -34,11 +41,11 @@ SectionOptions.defaultProps = defaultProps;
 
 const mapStateToProps = state => ({
     sections: state.page.sections,
+    totalReadingArticles: state.page.readingArticles.length,
 });
 
 const mapDispatchToProps = dispatch => ({
     onToggle: (section) => {
-        console.log(section);
         dispatch(toggleSection(section));
     },
 });

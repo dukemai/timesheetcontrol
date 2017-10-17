@@ -16,7 +16,7 @@ const defaultProps = {
 
 const SectionOption = ({ title, isEnabled, onToggle }) => (
     <li className="is-pulled-left section-option">
-        <Toggle onClick={onToggle} title={title} isEnabled={isEnabled} />
+        <Toggle onClick={(e) => { e.preventDefault(); onToggle(e); }} title={title} isEnabled={isEnabled} />
     </li>    
 );
 

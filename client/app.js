@@ -30,7 +30,7 @@ const App = ({ }) => (
         <div className="section">
             <div className="container">
                 <h1 className="title">
-                    New way reading articles
+                    1 minuts läsning
                 </h1>
                 <Page />
             </div>

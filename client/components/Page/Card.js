@@ -1,71 +1,164 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Countdown from 'react-countdown-now';
+import { connect } from 'react-redux';
 
 import CardButton from './CardButton';
 import IfComponent from './IfComponent';
+import CountDown from './CountDown';
+import { countDownArticle } from '../../actions';
 
 const propTypes = {
     title: PropTypes.string,
+    id: PropTypes.string,
     author: PropTypes.string,
     published: PropTypes.string,
     isReading: PropTypes.bool,
+    section: PropTypes.string,
+    removeClicked: PropTypes.func,
+    readClicked: PropTypes.func,
+    onTicked: PropTypes.func,
+    timerCompleted: PropTypes.func,
+    body: PropTypes.string,
+    readingTime: PropTypes.number,
 };
 const defaultProps = {
     title: '',
+    id: '',
     author: '',
     published: '',
     isReading: false,
+    section: '',
+    removeClicked: () => {},
+    readClicked: () => {},
+    onTicked: () => {},
+    timerCompleted: () => {},
+    body: '',
+    readingTime: 0,
 };
 
-const Card = ({ title, author, published, body, isReading }) => (
-    <div className="card">
-        <div className="card-content">
-            <p className="title">
-                {title}
-            </p>
-            <p className="content">
-                @{published}, {author}
-            </p>
-            <IfComponent
-                condition={isReading}
-                whenTrue={(
-                    <div className="content">
-                        <p>
-                            {body}
-                        </p>
-                    </div>    
-                )}
-                whenFalse={null}
-            />
-        </div>
-        <footer className="card-footer">
-            <CardButton
-                title="Dela till"
-                buttonTitle="Facebook"
-            />
-            <CardButton
-                buttonTitle="Läsa"
-            >
-                 <IfComponent
-                    condition={isReading}
-                    whenTrue={(
+class Card extends React.Component{
+    constructor(props) {
+        super(props);
+        
+        const { readingTime } = this.props;
+        this.setupState = this.setupState.bind(this);
+        this.stopCountingClicked = this.stopCountingClicked.bind(this);
+
+        this.setupState(readingTime);
+    }
+    componentWillReceiveProps(nextProps) {
+        const { readingTime } = nextProps;
+        this.setupState(readingTime);
+    }
+    setupState(readingTime) {
+        const enableCountDown = true;
+        this.state = {
+            enableCountDown,
+        };
+    }
+    stopCountingClicked() {
+        this.setState({
+            enableCountDown: false,
+        })
+    }
+    render() {
+        const { title, author, published, body, isReading, section, removeClicked, readClicked,
+            readingTime, timerCompleted, onTicked, id }
+            = this.props;
+        const { countedReadingTime, enableCountDown } = this.state;
+        return (
+            <div className="card">
+                <div className="card-content">
+                    <IfComponent
+                        condition={isReading && enableCountDown}
+                        whenTrue={(
+                                <span className="tag card-content__count-down is-warning">
+                                <CountDown
+                                    className="tag"
+                                    time={readingTime}
+                                    onComplete={timerCompleted}
+                                    onNextTick={(span) => { onTicked(id, span); }}
+                                    id={id}
+                                />
+                            </span>    
+                        )}
+                        whenFalse={null}
+                    />
+                    <p className="title">
+                        {title}
+                    </p>
+                    <p className="content">
                         <span className="tag is-primary">
-                            <Countdown className="tag" date={Date.now() + 100000} />
-                        </span>    
-                    )}
-                    whenFalse={null}
-                />
-            </CardButton>
-            <CardButton
-                buttonTitle="Ta bort"
-                buttonClassName="button is-danger"
-            />
-        </footer>
-    </div>
-);
+                            {section}
+                        </span> @{published}, {author}
+                    </p>
+                    <IfComponent
+                        condition={isReading}
+                        whenTrue={(
+                            <div className="content">
+                                <p>
+                                    {body}
+                                </p>
+                            </div>    
+                        )}
+                        whenFalse={null}
+                    />
+                </div>
+                <footer className="card-footer">
+                    <CardButton
+                        title="Dela till"
+                        buttonTitle="Facebook"
+                    />
+                     <IfComponent
+                        condition={isReading}
+                        whenTrue={(
+                            <CardButton
+                                onClick={readClicked}
+                            >
+                                <div className="tags has-addons">
+                                    <span className="tag is-info">Läser...</span>
+                                    <a
+                                        href="#"
+                                        className="tag is-warning"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            this.stopCountingClicked();
+                                        }}
+                                    >Avsluta räkna</a>
+                                </div>
+                            </CardButton>
+                        )}
+                        whenFalse={(
+                            <CardButton
+                                buttonTitle="Läsa"
+                                onClick={readClicked}
+                            />
+                        )}
+                     />   
+                    <CardButton
+                        buttonTitle="Ta bort"
+                        buttonClassName="button is-danger"
+                        onClick={removeClicked}
+                    />
+                </footer>
+            </div>
+        );
+    }
+}
 
 Card.propTypes = propTypes;
 Card.defaultProps = defaultProps;
 
-export default Card;
+const mapStateToProps = state => ({
+});
+
+const mapDispatchToProps = (dispatch, ownProps) => ({
+    timerCompleted: () => {
+        ownProps.removeClicked();
+    },
+    onTicked: (id, readingTime) => {
+        dispatch(countDownArticle(id, readingTime));
+    },
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Card);

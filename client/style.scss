@@ -13,3 +13,20 @@
         }
     }
 }
+.sections-bar{
+    position: relative;
+}
+.total-articles{
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+.card-content{
+    position: relative;
+
+    &__count-down{
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+}

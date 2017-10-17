@@ -19,12 +19,12 @@ const defaultProps = {
 };
 
 const CardButton = ({ className, buttonClassName, title, buttonTitle, onClick, children }) => (
-    <p className={`card-footer-item ${className}`}>
+    <div className={`card-footer-item ${className}`}>
         <span>
-            {title} <a className={buttonClassName} onClick={onClick} href="#">{buttonTitle}</a>
+            {title} <a className={buttonClassName} onClick={(e) => { e.preventDefault(); onClick(e); }} href="#">{buttonTitle}</a>
         </span>
         {children}
-    </p>
+    </div>
 );
 
 CardButton.propTypes = propTypes;
